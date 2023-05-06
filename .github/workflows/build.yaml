@@ -10,15 +10,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: 'stable'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
 
-    - name: Build
-      run: go build -v -o ./bin/ ./...
+      - name: Build
+        env:
+          GOOS: windows
+          GOARCH: amd64
+        run: go build -v -o ./bin/ ./...
 
-    - name: Test
-      run: go test -v ./...
+      - name: Test
+        run: go test -v ./...
