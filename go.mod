@@ -1,4 +1,4 @@
-module github.com/fhluo/i18n
+module github.com/fhluo/tools
 
 go 1.20
 
