@@ -82,7 +82,7 @@ func init() {
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		slog.Error("failed to execute root command", err)
+		slog.Error("failed to execute root command", "err", err)
 		os.Exit(1)
 	}
 }
