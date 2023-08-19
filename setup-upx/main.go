@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/hashicorp/go-getter"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
 	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 )

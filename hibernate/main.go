@@ -4,9 +4,9 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
 	"golang.org/x/sys/windows"
 	"log"
+	"log/slog"
 	"os"
 )
 
