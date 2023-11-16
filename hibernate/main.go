@@ -3,33 +3,33 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
-	"golang.org/x/sys/windows"
 	"log"
 	"log/slog"
 	"os"
+
+	"github.com/spf13/cobra"
+	"golang.org/x/sys/windows"
 )
 
 var ProcSetSuspendState = windows.NewLazyDLL("PowrProf.dll").NewProc("SetSuspendState")
 
-func SetSuspendState(hibernate bool, disableWakeupEvents bool) error {
-	var (
-		hibernate_           uintptr
-		force_               uintptr
-		disableWakeupEvents_ uintptr
-	)
+type Bool bool
 
-	if hibernate {
-		hibernate_ = 1
+func (b Bool) Uintptr() uintptr {
+	if b {
+		return 1
+	} else {
+		return 0
 	}
-	if disableWakeupEvents {
-		disableWakeupEvents_ = 1
-	}
+}
+
+func SetSuspendState(hibernate bool, disableWakeupEvents bool) error {
+	force := false
 
 	r, _, err := ProcSetSuspendState.Call(
-		hibernate_,
-		force_,
-		disableWakeupEvents_,
+		Bool(hibernate).Uintptr(),
+		Bool(force).Uintptr(),
+		Bool(disableWakeupEvents).Uintptr(),
 	)
 	if r == 0 {
 		return err
