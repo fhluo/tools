@@ -1,13 +1,15 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/samber/lo"
 	"log"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
@@ -15,31 +17,37 @@ var rootCmd = &cobra.Command{
 	Short: "wails build",
 	Args:  cobra.NoArgs,
 	RunE: func(_ *cobra.Command, _ []string) (err error) {
-		// 向 wails 传递的参数
-		args := []string{"build"}
-
-		if useUPX {
-			args = append(args, "-upx")
-		}
-		if useNSIS {
-			args = append(args, "-nsis")
-		}
+		paths := make([]string, 0, len(patterns))
 
 		// 将路径添加到环境变量中
-		for i := range path {
-			path[i], err = filepath.Abs(path[i])
+		for _, pattern := range patterns {
+			r, err := filepath.Glob(pattern)
 			if err != nil {
 				return err
 			}
+
+			// 获取绝对路径
+			for i := range r {
+				r[i], err = filepath.Abs(r[i])
+				if err != nil {
+					return err
+				}
+			}
+
+			paths = append(paths, r...)
 		}
 
-		err = os.Setenv("path", strings.Join(path, ";")+";"+os.Getenv("path"))
+		err = os.Setenv("path", strings.Join(paths, ";")+";"+os.Getenv("path"))
 		if err != nil {
 			return err
 		}
 
 		// 执行 wails build 命令
-		command := exec.Command("wails", args...)
+		command := exec.Command(
+			"wails", "build",
+			lo.If(useUPX, "-upx").Else(""),
+			lo.If(useNSIS, "-nsis").Else(""),
+		)
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
 		slog.Info(command.String(), "path", os.Getenv("path"))
@@ -49,9 +57,9 @@ var rootCmd = &cobra.Command{
 }
 
 var (
-	useUPX  bool     // 是否使用 UPX
-	useNSIS bool     // 是否使用 NSIS
-	path    []string // 要添加到环境变量中的路径
+	useUPX   bool     // 是否使用 UPX
+	useNSIS  bool     // 是否使用 NSIS
+	patterns []string // 要添加到环境变量中的路径
 )
 
 func init() {
@@ -59,7 +67,7 @@ func init() {
 
 	rootCmd.Flags().BoolVar(&useUPX, "upx", false, "use UPX")
 	rootCmd.Flags().BoolVar(&useNSIS, "nsis", false, "use NSIS")
-	rootCmd.Flags().StringSliceVar(&path, "path", nil, "paths to add to the environment variable")
+	rootCmd.Flags().StringSliceVar(&patterns, "path", nil, "paths to add to the environment variable")
 }
 
 func main() {
