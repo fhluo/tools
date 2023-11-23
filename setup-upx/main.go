@@ -1,17 +1,21 @@
 package main
 
 import (
-	"github.com/hashicorp/go-getter"
-	"github.com/spf13/cobra"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
 	"path/filepath"
+
+	"github.com/hashicorp/go-getter"
+	"github.com/spf13/cobra"
 )
 
+const version = "4.2.1"
+
 var (
-	source = "https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-win64.zip"
-	folder = "upx-4.0.2-win64"
+	source = fmt.Sprintf("https://github.com/upx/upx/releases/download/v%[1]s/upx-%[1]s-win64.zip", version)
+	folder = fmt.Sprintf("upx-%s-win64", version)
 )
 
 var rootCmd = &cobra.Command{
@@ -26,16 +30,12 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		err = os.Rename(filepath.Join(dst, folder), filepath.Join(dst, "upx"))
-
-		return nil
+		return os.Rename(filepath.Join(dst, folder), filepath.Join(dst, "upx"))
 	},
 }
 
 func init() {
 	log.SetFlags(0)
-
-	rootCmd.Flags().StringVar(&source, "src", source, "source")
 }
 
 func main() {

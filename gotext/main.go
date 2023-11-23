@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"log/slog"
+	"os"
+
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message/pipeline"
-	"log"
-	"log/slog"
-	"os"
 )
 
 var (

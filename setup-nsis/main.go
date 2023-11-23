@@ -1,18 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
+	"log/slog"
+
 	"github.com/hashicorp/go-getter"
 	"github.com/spf13/cobra"
-	"log/slog"
 )
 
+const version = "3.09"
+
 var (
-	source = "https://onboardcloud.dl.sourceforge.net/project/nsis/NSIS%203/3.09/nsis-3.09.zip"
-	folder = "nsis-3.09"
+	source = fmt.Sprintf("https://onboardcloud.dl.sourceforge.net/project/nsis/NSIS%%203/%[1]s/nsis-%[1]s.zip", version)
+	folder = fmt.Sprintf("nsis-%s", version)
 )
 
 var rootCmd = &cobra.Command{
@@ -27,16 +31,12 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		err = os.Rename(filepath.Join(dst, folder), filepath.Join(dst, "nsis"))
-
-		return nil
+		return os.Rename(filepath.Join(dst, folder), filepath.Join(dst, "nsis"))
 	},
 }
 
 func init() {
 	log.SetFlags(0)
-
-	rootCmd.Flags().StringVar(&source, "src", source, "source")
 }
 
 func main() {

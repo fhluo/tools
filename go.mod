@@ -16,7 +16,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.5 // indirect
 	cloud.google.com/go/storage v1.35.1 // indirect
-	github.com/aws/aws-sdk-go v1.47.13 // indirect
+	github.com/aws/aws-sdk-go v1.48.3 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -44,11 +44,11 @@ require (
 	golang.org/x/time v0.4.0 // indirect
 	golang.org/x/tools v0.15.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
-	google.golang.org/api v0.150.0 // indirect
+	google.golang.org/api v0.151.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto v0.0.0-20231106174013-bbf56f31fb17 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231106174013-bbf56f31fb17 // indirect
+	google.golang.org/genproto v0.0.0-20231120223509-83a465c0220f // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20231120223509-83a465c0220f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f // indirect
 	google.golang.org/grpc v1.59.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
