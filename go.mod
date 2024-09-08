@@ -4,7 +4,6 @@ go 1.23.0
 
 require (
 	github.com/hashicorp/go-getter v1.7.6
-	github.com/samber/lo v1.47.0
 	github.com/spf13/cobra v1.8.1
 	golang.org/x/sys v0.25.0
 	golang.org/x/text v0.18.0

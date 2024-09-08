@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/samber/lo"
 	"log"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -17,37 +17,48 @@ var rootCmd = &cobra.Command{
 	Short: "wails build",
 	Args:  cobra.NoArgs,
 	RunE: func(_ *cobra.Command, _ []string) (err error) {
-		paths := make([]string, 0, len(patterns))
-
-		// 将路径添加到环境变量中
-		for _, pattern := range patterns {
-			r, err := filepath.Glob(pattern)
-			if err != nil {
-				return err
-			}
-
-			// 获取绝对路径
-			for i := range r {
-				r[i], err = filepath.Abs(r[i])
+		paths := slices.Collect(func(yield func(string) bool) {
+			for pattern := range slices.Values(patterns) {
+				r, err := filepath.Glob(pattern)
 				if err != nil {
-					return err
+					slog.Warn(err.Error())
+					continue
+				}
+
+				for p := range slices.Values(r) {
+					p, err = filepath.Abs(p)
+					if err != nil {
+						slog.Warn(err.Error())
+						continue
+					}
+
+					if !yield(p) {
+						return
+					}
 				}
 			}
-
-			paths = append(paths, r...)
-		}
+		})
 
 		err = os.Setenv("path", strings.Join(paths, ";")+";"+os.Getenv("path"))
 		if err != nil {
 			return err
 		}
+		slog.Debug("env", "path", os.Getenv("path"))
+
+		args := slices.Collect(func(yield func(string) bool) {
+			yield("build")
+
+			if useUPX {
+				yield("-upx")
+			}
+
+			if useNSIS {
+				yield("-nsis")
+			}
+		})
 
 		// 执行 wails build 命令
-		command := exec.Command(
-			"wails", "build",
-			lo.If(useUPX, "-upx").Else(""),
-			lo.If(useNSIS, "-nsis").Else(""),
-		)
+		command := exec.Command("wails", args...)
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
 		slog.Info(command.String(), "path", os.Getenv("path"))
@@ -63,6 +74,11 @@ var (
 )
 
 func init() {
+	slog.SetDefault(slog.New(
+		slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		}),
+	))
 	log.SetFlags(0)
 
 	rootCmd.Flags().BoolVar(&useUPX, "upx", false, "use UPX")
