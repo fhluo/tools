@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "3.09"
+const version = "3.10"
 
 var (
 	source = fmt.Sprintf("https://onboardcloud.dl.sourceforge.net/project/nsis/NSIS%%203/%[1]s/nsis-%[1]s.zip", version)

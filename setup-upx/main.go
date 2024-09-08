@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "4.2.1"
+const version = "4.2.4"
 
 var (
 	source = fmt.Sprintf("https://github.com/upx/upx/releases/download/v%[1]s/upx-%[1]s-win64.zip", version)
