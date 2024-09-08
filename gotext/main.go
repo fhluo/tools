@@ -5,8 +5,8 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"slices"
 
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message/pipeline"
@@ -28,18 +28,22 @@ var (
 var rootCmd = &cobra.Command{
 	Use: "gotext [package]...",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		config.Supported = lo.FilterMap(languages, func(lang string, _ int) (tag language.Tag, ok bool) {
-			if lang == "" {
-				return
-			}
+		config.Supported = slices.Collect(func(yield func(tag language.Tag) bool) {
+			for lang := range slices.Values(languages) {
+				if lang == "" {
+					continue
+				}
 
-			if tag, err = language.Parse(lang); err != nil {
-				slog.Error("failed to parse", err, "lang", lang)
-			} else {
-				ok = true
-			}
+				tag, err := language.Parse(lang)
+				if err != nil {
+					slog.Error("failed to parse", err, "lang", lang)
+					continue
+				}
 
-			return
+				if !yield(tag) {
+					return
+				}
+			}
 		})
 
 		config.SourceLanguage, err = language.Parse(sourceLanguage)
