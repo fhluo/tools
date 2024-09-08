@@ -3,9 +3,12 @@
 package main
 
 import (
+	"iter"
 	"log"
 	"log/slog"
 	"os"
+	"reflect"
+	"slices"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/windows"
@@ -13,24 +16,35 @@ import (
 
 var ProcSetSuspendState = windows.NewLazyDLL("PowrProf.dll").NewProc("SetSuspendState")
 
-type Bool bool
+type SetSuspendState struct {
+	Hibernate           bool
+	Force               bool
+	DisableWakeupEvents bool
+}
 
-func (b Bool) Uintptr() uintptr {
-	if b {
-		return 1
-	} else {
-		return 0
+func (s SetSuspendState) fields() iter.Seq[reflect.Value] {
+	return func(yield func(reflect.Value) bool) {
+		v := reflect.ValueOf(s)
+		for i := 0; i < v.NumField(); i++ {
+			if !yield(v.Field(i)) {
+				break
+			}
+		}
 	}
 }
 
-func SetSuspendState(hibernate bool, disableWakeupEvents bool) error {
-	force := false
+func (s SetSuspendState) Call() error {
+	a := slices.Collect(func(yield func(uintptr) bool) {
+		for field := range s.fields() {
+			if field.Bool() {
+				yield(1)
+			} else {
+				yield(0)
+			}
+		}
+	})
 
-	r, _, err := ProcSetSuspendState.Call(
-		Bool(hibernate).Uintptr(),
-		Bool(force).Uintptr(),
-		Bool(disableWakeupEvents).Uintptr(),
-	)
+	r, _, err := ProcSetSuspendState.Call(a...)
 	if r == 0 {
 		return err
 	}
@@ -42,21 +56,18 @@ var rootCmd = cobra.Command{
 	Use:  "hibernate",
 	Args: cobra.ExactArgs(0),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return SetSuspendState(hibernate, disableWakeupEvents)
+		return setSuspendState.Call()
 	},
 }
 
-var (
-	hibernate           bool
-	disableWakeupEvents bool
-)
+var setSuspendState SetSuspendState
 
 func init() {
 	log.SetFlags(0)
 
 	rootCmd.PersistentFlags().BoolP("help", "", false, "help for hibernate")
-	rootCmd.Flags().BoolVarP(&hibernate, "hibernate", "h", true, "hibernate or suspend")
-	rootCmd.Flags().BoolVarP(&disableWakeupEvents, "disableWakeupEvents", "d", false, "disables all wake events")
+	rootCmd.Flags().BoolVarP(&setSuspendState.Hibernate, "hibernate", "h", true, "hibernate or suspend")
+	rootCmd.Flags().BoolVarP(&setSuspendState.DisableWakeupEvents, "disableWakeupEvents", "d", false, "disables all wake events")
 }
 
 func main() {
