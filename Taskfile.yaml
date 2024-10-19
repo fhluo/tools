@@ -6,11 +6,6 @@ tasks:
     cmds:
       - go build -o ../bin
 
-  build-hibernate:
-    dir: hibernate
-    cmds:
-      - go build -o ../bin
-
   build-setup-nsis:
     dir: setup-nsis
     cmds:
@@ -29,11 +24,10 @@ tasks:
   build:
     deps:
       - build-gotext
-      - build-hibernate
       - build-setup-nsis
       - build-setup-upx
       - build-wails-build
 
-  test:
+  install:
     cmds:
-      -
+      - cargo install --path .
