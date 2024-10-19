@@ -1,33 +1,19 @@
 version: 3
 
 tasks:
-  build-gotext:
-    dir: gotext
-    cmds:
-      - go build -o ../bin
-
-  build-setup-nsis:
-    dir: setup-nsis
-    cmds:
-      - go build -o ../bin
-
-  build-setup-upx:
-    dir: setup-upx
-    cmds:
-      - go build -o ../bin
-
-  build-wails-build:
-    dir: wails-build
-    cmds:
-      - go build -o ../bin
-
   build:
-    deps:
-      - build-gotext
-      - build-setup-nsis
-      - build-setup-upx
-      - build-wails-build
+    cmds:
+      # - cargo build --artifact-dir bin --release # unstable
+      - cargo build --release
+      - go build -o bin ./cmd/gotext
+      - go build -o bin ./cmd/setup-nsis
+      - go build -o bin ./cmd/setup-upx
+      - go build -o bin ./cmd/wails-build
 
   install:
     cmds:
+      - go install ./cmd/gotext
+      - go install ./cmd/setup-nsis
+      - go install ./cmd/setup-upx
+      - go install ./cmd/wails-build
       - cargo install --path .
