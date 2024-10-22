@@ -16,4 +16,5 @@ tasks:
       - go install ./cmd/setup-nsis
       - go install ./cmd/setup-upx
       - go install ./cmd/wails-build
-      - cargo install --path .
+      - cargo install --path hibernate
+      - cargo install --path touch
