@@ -5,17 +5,17 @@ tasks:
     cmds:
       # - cargo build --artifact-dir bin --release # unstable
       - cargo build --release
-      - go build -o bin ./cmd/gotext
-      - go build -o bin ./cmd/setup-nsis
-      - go build -o bin ./cmd/setup-upx
-      - go build -o bin ./cmd/wails-build
+      - go build -o bin ./gotext
+      - go build -o bin ./setup-nsis
+      - go build -o bin ./setup-upx
+      - go build -o bin ./wails-build
 
   install:
     cmds:
-      - go install ./cmd/gotext
-      - go install ./cmd/setup-nsis
-      - go install ./cmd/setup-upx
-      - go install ./cmd/wails-build
+      - go install ./gotext
+      - go install ./setup-nsis
+      - go install ./setup-upx
+      - go install ./wails-build
       - cargo install --path hibernate
       - cargo install --path json2csv
       - cargo install --path touch
