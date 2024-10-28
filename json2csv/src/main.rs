@@ -40,14 +40,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 #[inline]
-fn json_type(json: &Value) -> String {
+fn json_type(json: &Value) -> &'static str {
     match json {
-        Value::Null => "Null".to_string(),
-        Value::Bool(_) => "Bool".to_string(),
-        Value::Number(_) => "Number".to_string(),
-        Value::String(_) => "String".to_string(),
-        Value::Array(_) => "Array".to_string(),
-        Value::Object(_) => "Object".to_string(),
+        Value::Null => "Null",
+        Value::Bool(_) => "Bool",
+        Value::Number(_) => "Number",
+        Value::String(_) => "String",
+        Value::Array(_) => "Array",
+        Value::Object(_) => "Object",
     }
 }
 
