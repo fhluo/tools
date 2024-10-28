@@ -17,4 +17,5 @@ tasks:
       - go install ./cmd/setup-upx
       - go install ./cmd/wails-build
       - cargo install --path hibernate
+      - cargo install --path json2csv
       - cargo install --path touch
