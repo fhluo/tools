@@ -7,7 +7,7 @@ use clap::Parser;
 
 #[derive(Parser, Debug)]
 struct Args {
-    #[arg(required = true)]
+    #[arg(required = true, value_name = "FILE")]
     filenames: Vec<String>,
 }
 
