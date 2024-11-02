@@ -1,3 +1,4 @@
+use clap::ArgAction::HelpLong;
 use std::error::Error;
 use clap::Parser;
 use windows::Win32::Foundation::BOOLEAN;
@@ -25,14 +26,19 @@ fn set_suspend_state(
 }
 
 #[derive(Parser, Debug)]
+#[command(disable_help_flag = true)]
 struct Args {
-    /// make the system hibernate or suspend
+    /// Make the system hibernate or suspend
     #[arg(short, long, default_value_t = true)]
     hibernate: bool,
 
-    /// disable all wake events
+    /// Disable all wake events
     #[arg(short, long, default_value_t = false)]
     wakeup_events_disabled: bool,
+
+    /// Print help
+    #[arg(long, action = HelpLong)]
+    help: Option<bool>,
 }
 
 fn main() {
