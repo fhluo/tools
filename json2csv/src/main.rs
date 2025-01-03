@@ -54,16 +54,20 @@ fn json_type(json: &Value) -> &'static str {
 fn to_csv(writer: impl Write, json: &Value) -> Result<(), Box<dyn Error>> {
     let mut writer = csv::Writer::from_writer(writer);
 
-    let array = json.as_array().ok_or(format!("expected array, got {}", json_type(json)))?;
+    let array = json
+        .as_array()
+        .ok_or(format!("expected array, got {}", json_type(json)))?;
 
-    // for value in array {
-    //     match value {
-    //         Value::String(_) | Value::Null => {}
-    //         _ => return Err(format!("expected object or null, got {:?}", json_type(json)).into());
-    //     }
-    // }
+    for value in array {
+        if matches!(value, Value::Object(_) | Value::Null) {
+            return Err(format!("expected object or null, got {:?}", json_type(json)).into());
+        }
+    }
 
-    let array = array.into_iter().filter_map(Value::as_object).collect::<Vec<_>>();
+    let array = array
+        .into_iter()
+        .filter_map(Value::as_object)
+        .collect::<Vec<_>>();
 
     let keys = array
         .iter()
@@ -75,9 +79,8 @@ fn to_csv(writer: impl Write, json: &Value) -> Result<(), Box<dyn Error>> {
 
     for object in array {
         writer.write_record(
-            keys.iter().map(|&key|
-                object.get(key).map_or("".to_string(), |value| value.to_string())
-            )
+            keys.iter()
+                .map(|&key| object.get(key).map_or_else(String::new, Value::to_string)),
         )?;
     }
 
