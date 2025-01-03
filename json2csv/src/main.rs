@@ -4,7 +4,7 @@ use serde_json::Value;
 use std::error::Error;
 use std::fs::File;
 use std::io;
-use std::io::{Read, Write};
+use std::io::{BufReader, BufWriter, Read, Write};
 
 /// Converts JSON object array to CSV
 #[derive(Parser)]
@@ -23,20 +23,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
     let mut reader: Box<dyn Read> = if let Some(path) = args.input {
-        Box::new(File::open(path)?)
+        Box::new(BufReader::new(File::open(path)?))
     } else {
-        Box::new(io::stdin())
+        Box::new(BufReader::new(io::stdin()))
     };
 
     let json: Value = serde_json::from_reader(&mut reader)?;
 
     let mut writer: Box<dyn Write> = if let Some(path) = args.output {
-        Box::new(File::create(path)?)
+        Box::new(BufWriter::new(File::create(path)?))
     } else {
-        Box::new(io::stdout())
+        Box::new(BufWriter::new(io::stdout()))
     };
 
-    to_csv(&mut writer, &json)
+    to_csv(&mut writer, &json)?;
+    writer.flush()?;
+
+    Ok(())
 }
 
 #[inline]
