@@ -62,7 +62,7 @@ fn to_csv(writer: impl Write, json: &Value) -> Result<(), Box<dyn Error>> {
         .ok_or(format!("expected array, got {}", json_type(json)))?;
 
     for value in array {
-        if matches!(value, Value::Object(_) | Value::Null) {
+        if !matches!(value, Value::Object(_) | Value::Null) {
             return Err(format!("expected object or null, got {:?}", json_type(json)).into());
         }
     }
