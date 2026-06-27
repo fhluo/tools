@@ -1,7 +1,6 @@
 use clap::ArgAction::HelpLong;
-use std::error::Error;
 use clap::Parser;
-use windows::Win32::Foundation::BOOLEAN;
+use windows::Win32::Foundation::GetLastError;
 use windows::Win32::System::Power::SetSuspendState;
 
 /// 通过关闭电源来暂停系统。 根据 `hibernate` 参数，系统进入暂停 (睡眠) 状态或休眠 (S4) 。
@@ -15,14 +14,14 @@ fn set_suspend_state(
     hibernate: bool,
     force: bool,
     wakeup_events_disabled: bool,
-) -> Result<(), Box<dyn Error>> {
+) -> windows_result::Result<()> {
     unsafe {
-        SetSuspendState::<BOOLEAN, BOOLEAN, BOOLEAN>(
-            hibernate.into(),
-            force.into(),
-            wakeup_events_disabled.into(),
-        )
-    }.ok().map_err(|err| err.into())
+        if !SetSuspendState(hibernate, force, wakeup_events_disabled) {
+            GetLastError().ok()?
+        }
+    }
+
+    Ok(())
 }
 
 #[derive(Parser, Debug)]
