@@ -6,15 +6,15 @@ tasks:
       # - cargo build --artifact-dir bin --release # unstable
       - cargo build --release
       - go build -o bin ./gotext
-      - go build -o bin ./setup-nsis
-      - go build -o bin ./setup-upx
+      - go build -o bin ./dl-nsis
+      - go build -o bin ./dl-upx
       - go build -o bin ./wails-build
 
   install:
     cmds:
       - go install ./gotext
-      - go install ./setup-nsis
-      - go install ./setup-upx
+      - go install ./dl-nsis
+      - go install ./dl-upx
       - go install ./wails-build
       - cargo install --path hibernate
       - cargo install --path json2csv

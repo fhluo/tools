@@ -3,24 +3,25 @@ package main
 import (
 	"fmt"
 	"log"
-	"log/slog"
 	"os"
 	"path/filepath"
+
+	"log/slog"
 
 	"github.com/hashicorp/go-getter"
 	"github.com/spf13/cobra"
 )
 
-const version = "4.2.4"
+const version = "3.10"
 
 var (
-	source = fmt.Sprintf("https://github.com/upx/upx/releases/download/v%[1]s/upx-%[1]s-win64.zip", version)
-	folder = fmt.Sprintf("upx-%s-win64", version)
+	source = fmt.Sprintf("https://onboardcloud.dl.sourceforge.net/project/nsis/NSIS%%203/%[1]s/nsis-%[1]s.zip", version)
+	folder = fmt.Sprintf("nsis-%s", version)
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "setup-upx dir",
-	Short: "setup upx",
+	Use:   "dl-nsis dir",
+	Short: "setup nsis",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dst := args[0]
@@ -30,7 +31,7 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		return os.Rename(filepath.Join(dst, folder), filepath.Join(dst, "upx"))
+		return os.Rename(filepath.Join(dst, folder), filepath.Join(dst, "nsis"))
 	},
 }
 
